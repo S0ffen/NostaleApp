@@ -9,7 +9,13 @@ const BASE_URL =
 const NUM_PAGES = 11;
 
 export async function GET() {
-  const allEvents: any[] = [];
+  type RawEvent = {
+    title: string;
+    link: string;
+    date: string;
+  };
+
+  const allEvents: RawEvent[] = [];
 
   for (let i = 1; i <= NUM_PAGES; i++) {
     const url = i === 1 ? BASE_URL : `${BASE_URL}/?pageNo=${i}`;

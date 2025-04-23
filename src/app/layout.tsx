@@ -29,7 +29,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900 text-white min-h-screen`}
       >
         {/* NAVBAR */}
-        <nav className="bg-gray-800 border-b border-gray-700 px-6 py-4 flex gap-8 text-sm">
+        <nav className="bg-gray-800 border-b border-gray-700 px-6 py-4 flex gap-8 text-sm text-white">
           <Link href="/" className="hover:text-blue-400 font-semibold">
             🏠 Strona główna
           </Link>

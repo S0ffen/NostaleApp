@@ -70,16 +70,6 @@ export default function CalendarPage() {
       });
   }, []);
 
-  const [sortAsc, setSortAsc] = useState(true);
-
-  const sortedEvents = useMemo(() => {
-    return [...events].sort((a, b) =>
-      sortAsc
-        ? a.start.getTime() - b.start.getTime()
-        : b.start.getTime() - a.start.getTime()
-    );
-  }, [events, sortAsc]);
-
   function normalizeTitle(title: string): string {
     return title.replace(/\[\d{2}\/\d{2} - \d{2}\/\d{2}\]/g, "").trim();
   }
@@ -128,9 +118,9 @@ export default function CalendarPage() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-6">
+      {/* LEWA KOLUMNA */}
       <div className="flex flex-col lg:flex-row gap-6 p-6">
-        {/* LEWA KOLUMNA */}
-        <div className="lg:w-2/3 w-full">
+        <div className="flex-1">
           <h1 className="text-2xl font-bold mb-4">Lista eventów NosTale</h1>
 
           <h2 className="text-xl font-semibold mt-10 mb-4">
@@ -147,10 +137,18 @@ export default function CalendarPage() {
                 </th>
                 <th
                   className="p-2 text-left cursor-pointer hover:text-blue-500"
-                  onClick={() => setGroupSort("count")}
+                  onClick={() => {
+                    if (groupSort === "count") {
+                      setGroupAsc(!groupAsc);
+                    } else {
+                      setGroupSort("count");
+                      setGroupAsc(false);
+                    }
+                  }}
                 >
                   Ilość {groupSort === "count" ? (groupAsc ? "▲" : "▼") : ""}
                 </th>
+
                 <th
                   className="p-2 text-left cursor-pointer hover:text-blue-500"
                   onClick={() => setGroupSort("date")}
@@ -174,25 +172,25 @@ export default function CalendarPage() {
             </tbody>
           </table>
         </div>
+      </div>
 
-        {/* PRAWA KOLUMNA */}
-        <div className="lg:w-1/3 w-full">
-          <h2 className="text-xl font-semibold mb-4">Kalendarz pomocniczy</h2>
-          <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            style={{ height: 600 }}
-            views={["month"]}
-            culture="pl"
-            onSelectEvent={(event) => {
-              if (event.link) {
-                window.open(event.link, "_blank");
-              }
-            }}
-          />
-        </div>
+      {/* PRAWA KOLUMNA */}
+      <div className="flex-1 overflow-auto max-h-[calc(100vh-100px)]">
+        <h2 className="text-xl font-semibold mb-4">Kalendarz pomocniczy</h2>
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: 600 }}
+          views={["month"]}
+          culture="pl"
+          onSelectEvent={(event) => {
+            if (event.link) {
+              window.open(event.link, "_blank");
+            }
+          }}
+        />
       </div>
     </div>
   );

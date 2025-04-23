@@ -151,10 +151,18 @@ export default function CalendarPage() {
 
                 <th
                   className="p-2 text-left cursor-pointer hover:text-blue-500"
-                  onClick={() => setGroupSort("date")}
+                  onClick={() => {
+                    if (groupSort === "date") {
+                      setGroupAsc(!groupAsc);
+                    } else {
+                      setGroupSort("date");
+                      setGroupAsc(false);
+                    }
+                  }}
                 >
                   Ostatnio {groupSort === "date" ? (groupAsc ? "▲" : "▼") : ""}
                 </th>
+
                 <th className="p-2 text-left">Ile dni temu</th>
               </tr>
             </thead>

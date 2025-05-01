@@ -30,7 +30,7 @@ export async function GET() {
     await page.goto("https://store.steampowered.com/news/app/550470", {
       waitUntil: "networkidle2",
     });
-
+    //test 
     console.log("🔃 Scrollowanie strony przez 80 sekund...");
     const start = Date.now();
     while (Date.now() - start < 130000) {

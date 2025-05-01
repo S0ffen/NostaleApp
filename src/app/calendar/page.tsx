@@ -1,14 +1,12 @@
 "use client";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import { parse, format, startOfWeek, getDay } from "date-fns";
 import { pl } from "date-fns/locale";
 
-const locales = {
-  pl: pl,
-};
+const locales = { pl };
 
 const localizer = dateFnsLocalizer({
   format,
@@ -25,161 +23,163 @@ type Event = {
   allDay?: boolean;
   link: string;
 };
+
 type FetchedEvent = {
   title: string;
-  link: string;
+  customTitle?: string;
   date: string;
+  subdesc: string;
+  link: string;
 };
+
+// 🔧 Funkcja pomocnicza do parsowania różnych formatów dat
+function normalizeDate(raw: string): Date {
+  if (!raw || raw.toLowerCase().includes("brak")) return new Date();
+
+  // pełna data typu dd.MM.yyyy
+  if (/^\d{2}\.\d{2}\.\d{4}$/.test(raw)) {
+    return parse(raw, "dd.MM.yyyy", new Date());
+  }
+
+  // data typu "29 kwi"
+  const match = raw.match(/^(\d{1,2})\s+([a-zżźćńółęąś]{3,})$/i);
+  if (match) {
+    const day = match[1].padStart(2, "0");
+    const monthName = match[2].toLowerCase();
+    const months: Record<string, string> = {
+      sty: "01",
+      lut: "02",
+      mar: "03",
+      kwi: "04",
+      maj: "05",
+      cze: "06",
+      lip: "07",
+      sie: "08",
+      wrz: "09",
+      paź: "10",
+      lis: "11",
+      gru: "12",
+    };
+    const month = months[monthName.slice(0, 3)];
+    if (month) {
+      const year = new Date().getFullYear();
+      return parse(`${day}.${month}.${year}`, "dd.MM.yyyy", new Date());
+    }
+  }
+
+  // data typu "01 MAJ" z subdesc
+  const subMatch = raw.match(/^(\d{1,2})\s+([A-ZŻŹĆŁŚĘÓŃ]{3})$/i);
+  if (subMatch) {
+    const day = subMatch[1].padStart(2, "0");
+    const monthTxt = subMatch[2].toLowerCase().slice(0, 3);
+    const months: Record<string, string> = {
+      sty: "01",
+      lut: "02",
+      mar: "03",
+      kwi: "04",
+      maj: "05",
+      cze: "06",
+      lip: "07",
+      sie: "08",
+      wrz: "09",
+      paź: "10",
+      lis: "11",
+      gru: "12",
+    };
+    const month = months[monthTxt];
+    if (month) {
+      const year = new Date().getFullYear();
+      return parse(`${day}.${month}.${year}`, "dd.MM.yyyy", new Date());
+    }
+  }
+
+  return new Date(); // fallback
+}
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<Event[]>([]);
+  const [fetchedEvents, setFetchedEvents] = useState<FetchedEvent[]>([]);
 
   useEffect(() => {
-    fetch("/events.json")
+    fetch("/steam-events.json")
       .then((res) => res.json())
-      .then((data) => {
-        const parsed: Event[] = (data as FetchedEvent[]).map((e) => {
-          const rangeRegex = /\[(\d{2})\/(\d{2})\s*-\s*(\d{2})\/(\d{2})\]/; // [17/04 - 22/04]
-          const match = e.title.match(rangeRegex);
+      .then((data: FetchedEvent[]) => {
+        setFetchedEvents(data);
 
-          if (match) {
-            const [, startDay, startMonth, endDay, endMonth] = match;
-            const year = parse(e.date, "dd.MM.yyyy", new Date()).getFullYear();
-
-            const startDate = new Date(`${year}-${startMonth}-${startDay}`);
-            const endDate = new Date(`${year}-${endMonth}-${endDay}`);
-            return {
-              title: e.title,
-              start: startDate,
-              end: endDate,
-              allDay: true,
-              link: e.link, // ✅ dodaj link
-            };
-          } else {
-            const d = parse(e.date, "dd.MM.yyyy", new Date());
-            return {
-              title: e.title,
-              start: d,
-              end: d,
-              allDay: true,
-              link: e.link, // ✅ dodaj link
-            };
-          }
+        const parsed: Event[] = data.map((e) => {
+          const titleToUse = e.customTitle || e.title;
+          const d = normalizeDate(e.date);
+          return {
+            title: titleToUse,
+            start: d,
+            end: d,
+            allDay: true,
+            link: e.link,
+          };
         });
+
         setEvents(parsed);
       });
   }, []);
 
-  function normalizeTitle(title: string): string {
-    return title.replace(/\[\d{2}\/\d{2} - \d{2}\/\d{2}\]/g, "").trim();
+  function handleTitleChange(index: number, value: string) {
+    const updated = [...fetchedEvents];
+    updated[index].customTitle = value;
+    setFetchedEvents(updated);
+
+    const parsed: Event[] = updated.map((e) => {
+      const titleToUse = e.customTitle || e.title;
+      const d = normalizeDate(e.date);
+      return {
+        title: titleToUse,
+        start: d,
+        end: d,
+        allDay: true,
+        link: e.link,
+      };
+    });
+
+    setEvents(parsed);
   }
-  const [groupSort, setGroupSort] = useState<"count" | "date" | "title">(
-    "count"
-  );
-  const [groupAsc, setGroupAsc] = useState(false);
 
-  const groupedEvents = useMemo(() => {
-    const map = new Map<string, { count: number; lastDate: Date }>();
-
-    events.forEach((e) => {
-      const key = normalizeTitle(e.title);
-      const existing = map.get(key);
-
-      if (!existing || e.start > existing.lastDate) {
-        map.set(key, {
-          count: (existing?.count || 0) + 1,
-          lastDate: e.start,
-        });
-      } else {
-        map.set(key, {
-          count: (existing?.count || 0) + 1,
-          lastDate: existing.lastDate,
-        });
-      }
-    });
-
-    const result = Array.from(map.entries()).map(([title, data]) => ({
-      title,
-      count: data.count,
-      lastDate: data.lastDate,
-      daysAgo: Math.floor(
-        (Date.now() - data.lastDate.getTime()) / (1000 * 60 * 60 * 24)
-      ),
-    }));
-
-    return result.sort((a, b) => {
-      const direction = groupAsc ? 1 : -1;
-      if (groupSort === "count") return direction * (a.count - b.count);
-      if (groupSort === "date")
-        return direction * (a.lastDate.getTime() - b.lastDate.getTime());
-      return direction * a.title.localeCompare(b.title);
-    });
-  }, [events, groupSort, groupAsc]);
+  function rowColor(subdesc: string): string {
+    if (subdesc.toLowerCase().includes("zniżka")) return "bg-green-100";
+    if (subdesc.toLowerCase().includes("korzyściami")) return "bg-yellow-100";
+    return "";
+  }
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-6">
       {/* LEWA KOLUMNA */}
-      <div className="flex flex-col lg:flex-row gap-6 p-6">
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold mb-4">Lista eventów NosTale</h1>
-
-          <h2 className="text-xl font-semibold mt-10 mb-4">
-            Powtarzające się eventy
-          </h2>
-          <table className="w-full text-sm border border-gray-300 rounded">
-            <thead>
-              <tr className="bg-gray-100">
-                <th
-                  className="p-2 text-left cursor-pointer hover:text-blue-500"
-                  onClick={() => setGroupSort("title")}
-                >
-                  Nazwa
-                </th>
-                <th
-                  className="p-2 text-left cursor-pointer hover:text-blue-500"
-                  onClick={() => {
-                    if (groupSort === "count") {
-                      setGroupAsc(!groupAsc);
-                    } else {
-                      setGroupSort("count");
-                      setGroupAsc(false);
-                    }
-                  }}
-                >
-                  Ilość {groupSort === "count" ? (groupAsc ? "▲" : "▼") : ""}
-                </th>
-
-                <th
-                  className="p-2 text-left cursor-pointer hover:text-blue-500"
-                  onClick={() => {
-                    if (groupSort === "date") {
-                      setGroupAsc(!groupAsc);
-                    } else {
-                      setGroupSort("date");
-                      setGroupAsc(false);
-                    }
-                  }}
-                >
-                  Ostatnio {groupSort === "date" ? (groupAsc ? "▲" : "▼") : ""}
-                </th>
-
-                <th className="p-2 text-left">Ile dni temu</th>
+      <div className="flex-1">
+        <h1 className="text-2xl font-bold mb-4">
+          Lista eventów NosTale (Steam)
+        </h1>
+        <table className="w-full text-sm border border-gray-300 rounded">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="p-2 text-left">Tytuł</th>
+              <th className="p-2 text-left">Data</th>
+              <th className="p-2 text-left">Edytuj</th>
+            </tr>
+          </thead>
+          <tbody>
+            {fetchedEvents.map((e, i) => (
+              <tr key={i} className={`border-t ${rowColor(e.subdesc)}`}>
+                <td className="p-2">{e.customTitle || e.title}</td>
+                <td className="p-2">{e.date}</td>
+                <td className="p-2">
+                  <input
+                    value={e.customTitle || ""}
+                    onChange={(ev) => handleTitleChange(i, ev.target.value)}
+                    className="border rounded p-1 w-full"
+                    placeholder="Własny tytuł"
+                  />
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {groupedEvents.map((e, i) => (
-                <tr key={i} className="border-t">
-                  <td className="p-2">{e.title}</td>
-                  <td className="p-2">{e.count}</td>
-                  <td className="p-2">
-                    {e.lastDate.toLocaleDateString("pl-PL")}
-                  </td>
-                  <td className="p-2">{e.daysAgo} dni temu</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {/* PRAWA KOLUMNA */}

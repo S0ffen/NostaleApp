@@ -30,7 +30,7 @@ export async function GET() {
     await page.goto("https://store.steampowered.com/news/app/550470", {
       waitUntil: "networkidle2",
     });
-    //test
+
     console.log("🔃 Scrollowanie strony przez 80 sekund...");
     const start = Date.now();
     while (Date.now() - start < 130000) {
@@ -75,40 +75,31 @@ export async function GET() {
         if (results.length >= MAX_EVENTS) break;
 
         const link = "https://store.steampowered.com" + a.getAttribute("href");
-
         const title =
           a.querySelector("div._1M8-Pa3b3WboayCgd5VBJT")?.textContent?.trim() ||
           "Brak tytułu";
         const description =
           a.querySelector("div._2g3JjlrRkzgUWXF57w3leW")?.textContent?.trim() ||
           "Brak opisu";
-
         const subdescRaw = a.querySelector(
           "div.sUBHF-Qdb_RUPYOBkgO1a div:not(:has(div))"
         );
         const subdesc = subdescRaw?.textContent?.trim() || "";
-        const rawDate =
-          a
-            .querySelector("div.sUBHF-Qdb_RUPYOBkgO1a > div")
-            ?.textContent?.trim() || "";
 
         let dateInfo = "";
 
-        // 🎯 1. Próba z subdesc (np. "4 CZE 2024")
-        const subMatch = rawDate.match(
-          /(\d{1,2})\s+([A-ZŁŚŹŻĆŃÓĘa-złśźżćńóę]{3})\s+(\d{4})/
-        );
-        if (subMatch) {
-          const day = subMatch[1].padStart(2, "0");
-          const monthKey = subMatch[2].toLowerCase().slice(0, 3);
+        // 🎯 1. Próba z <div class="Focusable"> np. "30 kwi"
+        const focusDate = a.querySelector("div.Focusable")?.textContent?.trim();
+        const focusMatch = focusDate?.match(/^(\d{1,2})\s+([a-z]{3})$/i);
+        if (focusMatch) {
+          const day = focusMatch[1].padStart(2, "0");
+          const monthKey = focusMatch[2].toLowerCase().slice(0, 3);
           const month = months[monthKey];
-          const year = subMatch[3];
-          if (month) {
-            dateInfo = `${day}.${month}.${year}`;
-          }
+          const year = inferYearFromMonth(parseInt(month));
+          if (month) dateInfo = `${day}.${month}.${year}`;
         }
 
-        // 🎯 2. Próba z description (np. "od 01.05. (11:00)")
+        // 🎯 2. Próba z description (np. "od 01.05.")
         if (!dateInfo) {
           const descMatch = description.match(/(\d{1,2})\.(\d{1,2})\./);
           if (descMatch) {
@@ -118,6 +109,28 @@ export async function GET() {
             dateInfo = `${day}.${month}.${year}`;
           }
         }
+
+        // 🎯 3. Próba z rawDate z subdesc (jeśli np. "4 CZE 2024")
+        const rawDate =
+          a
+            .querySelector("div.sUBHF-Qdb_RUPYOBkgO1a > div")
+            ?.textContent?.trim() || "";
+        if (!dateInfo) {
+          const subMatch = rawDate.match(
+            /(\d{1,2})\s+([A-ZŁŚŹŻĆŃÓĘa-złśźżćńóę]{3})\s+(\d{4})/
+          );
+          if (subMatch) {
+            const day = subMatch[1].padStart(2, "0");
+            const monthKey = subMatch[2].toLowerCase().slice(0, 3);
+            const month = months[monthKey];
+            const year = subMatch[3];
+            if (month) dateInfo = `${day}.${month}.${year}`;
+          }
+        }
+
+        const status =
+          a.querySelector("div.EVDkYKG_ikfyfH16lmQ-1")?.textContent?.trim() ||
+          "";
 
         results.push({
           title,

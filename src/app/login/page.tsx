@@ -15,8 +15,12 @@ export default function LoginPage() {
       await signInWithEmailAndPassword(auth, email, password);
       alert("Zalogowano pomyślnie!");
       window.location.href = "/calendar";
-    } catch (error: any) {
-      alert(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("Wystąpił nieznany błąd.");
+      }
     }
   };
 

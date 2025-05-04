@@ -32,16 +32,13 @@ type FetchedEvent = {
   link: string;
 };
 
-// 🔧 Funkcja pomocnicza do parsowania różnych formatów dat
 function normalizeDate(raw: string): Date {
   if (!raw || raw.toLowerCase().includes("brak")) return new Date();
 
-  // pełna data typu dd.MM.yyyy
   if (/^\d{2}\.\d{2}\.\d{4}$/.test(raw)) {
     return parse(raw, "dd.MM.yyyy", new Date());
   }
 
-  // data typu "29 kwi"
   const match = raw.match(/^(\d{1,2})\s+([a-zżźćńółęąś]{3,})$/i);
   if (match) {
     const day = match[1].padStart(2, "0");
@@ -66,8 +63,8 @@ function normalizeDate(raw: string): Date {
       return parse(`${day}.${month}.${year}`, "dd.MM.yyyy", new Date());
     }
   }
+  const [currentDate, setCurrentDate] = useState(new Date());
 
-  // data typu "01 MAJ" z subdesc
   const subMatch = raw.match(/^(\d{1,2})\s+([A-ZŻŹĆŁŚĘÓŃ]{3})$/i);
   if (subMatch) {
     const day = subMatch[1].padStart(2, "0");
@@ -93,7 +90,17 @@ function normalizeDate(raw: string): Date {
     }
   }
 
-  return new Date(); // fallback
+  return new Date();
+}
+
+function getEventColorClass(subdesc: string): string {
+  const desc = subdesc.toLowerCase();
+  if (desc.includes("zniżka")) return "green";
+  if (desc.includes("wydarzenie w grze")) return "gold";
+  if (desc.includes("wydarzenie z łupami")) return "gold";
+  if (desc.includes("wydarzenie z korzyściami")) return "gold";
+  if (desc.includes("aktualności")) return "blue";
+  return "";
 }
 
 export default function CalendarPage() {
@@ -144,14 +151,58 @@ export default function CalendarPage() {
 
   function rowColor(subdesc: string): string {
     if (subdesc.toLowerCase().includes("zniżka")) return "bg-green-100";
-    if (subdesc.toLowerCase().includes("korzyściami")) return "bg-yellow-100";
+    if (subdesc.toLowerCase().includes("wydarzenie w grze"))
+      return "bg-yellow-100";
+    if (subdesc.toLowerCase().includes("wydarzenie z łupami"))
+      return "bg-yellow-100";
+    if (subdesc.toLowerCase().includes("wydarzenie z korzyściami"))
+      return "bg-yellow-100";
+    if (subdesc.toLowerCase().includes("aktualności")) return "bg-blue-100";
     return "";
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 p-6">
-      {/* LEWA KOLUMNA */}
-      <div className="flex-1">
+    <div className="flex flex-col gap-6 p-6">
+      {/* KALENDARZ NA GÓRZE */}
+      <div className="w-full">
+        <h2 className="text-xl font-semibold mb-4">Kalendarz pomocniczy</h2>
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: 600 }}
+          views={["month"]}
+          culture="pl"
+          onSelectEvent={(event) => {
+            if (event.link) {
+              window.open(event.link, "_blank");
+            }
+          }}
+          eventPropGetter={(event) => {
+            const fetched = fetchedEvents.find(
+              (e) => (e.customTitle || e.title) === event.title
+            );
+            const color = fetched ? getEventColorClass(fetched.subdesc) : "";
+            return {
+              style: {
+                backgroundColor:
+                  color === "green"
+                    ? "#c6f6d5"
+                    : color === "gold"
+                    ? "#fefcbf"
+                    : color === "blue"
+                    ? "#bee3f8"
+                    : undefined,
+                color: "#000",
+              },
+            };
+          }}
+        />
+      </div>
+
+      {/* LISTA EVENTÓW POD KALENDARZEM */}
+      <div className="w-full">
         <h1 className="text-2xl font-bold mb-4">
           Lista eventów NosTale (Steam)
         </h1>
@@ -180,25 +231,6 @@ export default function CalendarPage() {
             ))}
           </tbody>
         </table>
-      </div>
-
-      {/* PRAWA KOLUMNA */}
-      <div className="flex-1 overflow-auto max-h-[calc(100vh-100px)]">
-        <h2 className="text-xl font-semibold mb-4">Kalendarz pomocniczy</h2>
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 600 }}
-          views={["month"]}
-          culture="pl"
-          onSelectEvent={(event) => {
-            if (event.link) {
-              window.open(event.link, "_blank");
-            }
-          }}
-        />
       </div>
     </div>
   );

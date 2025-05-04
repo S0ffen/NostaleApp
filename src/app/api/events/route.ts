@@ -91,7 +91,6 @@ export async function GET() {
 
         // 🔎 Szukaj daty wewnątrz kontenera subdesc (Focusable)
         const subdescContainer = a.querySelector("div.sUBHF-Qdb_RUPYOBkgO1a");
-        let rawDate = "";
 
         if (subdescContainer) {
           const innerDivs = subdescContainer.querySelectorAll("div");

@@ -89,7 +89,7 @@ export async function GET() {
 
         let dateInfo = "";
 
-        // 🎯 1. Szukaj daty w <div class="Focusable"> wewnątrz sekcji subdesc
+        // 🔎 Szukaj daty wewnątrz kontenera subdesc (Focusable)
         const subdescContainer = a.querySelector("div.sUBHF-Qdb_RUPYOBkgO1a");
         let rawDate = "";
 
@@ -97,25 +97,40 @@ export async function GET() {
           const innerDivs = subdescContainer.querySelectorAll("div");
           for (const div of innerDivs) {
             const text = div.textContent?.trim() || "";
-            if (/^\d{1,2}\s+[a-zA-Złżźćńóę]{3,}\s+\d{4}$/.test(text)) {
-              rawDate = text;
-              break;
+
+            // ✳️ Próba pełnej daty "17 kwi 2024"
+            const fullDateMatch = text.match(
+              /^(\d{1,2})\s+([a-zA-Złżźćńóę]{3,})\s+(\d{4})$/
+            );
+            if (fullDateMatch) {
+              const day = fullDateMatch[1].padStart(2, "0");
+              const monthKey = fullDateMatch[2].toLowerCase().slice(0, 3);
+              const month = months[monthKey];
+              const year = fullDateMatch[3];
+              if (month) {
+                dateInfo = `${day}.${month}.${year}`;
+                break;
+              }
+            }
+
+            // ✳️ Próba skróconej daty "17 kwi"
+            const shortMatch = text.match(
+              /^(\d{1,2})\s+([a-zA-Złżźćńóę]{3,})$/
+            );
+            if (shortMatch) {
+              const day = shortMatch[1].padStart(2, "0");
+              const monthKey = shortMatch[2].toLowerCase().slice(0, 3);
+              const month = months[monthKey];
+              if (month) {
+                const year = inferYearFromMonth(parseInt(month));
+                dateInfo = `${day}.${month}.${year}`;
+                break;
+              }
             }
           }
         }
 
-        const fullDateMatch = rawDate.match(
-          /(\d{1,2})\s+([A-ZŁŚŹŻĆŃÓĘa-złśźżćńóę]{3})\s+(\d{4})/
-        );
-        if (fullDateMatch) {
-          const day = fullDateMatch[1].padStart(2, "0");
-          const monthKey = fullDateMatch[2].toLowerCase().slice(0, 3);
-          const month = months[monthKey];
-          const year = fullDateMatch[3];
-          if (month) dateInfo = `${day}.${month}.${year}`;
-        }
-
-        // 🎯 2. Jeśli dalej brak daty – spróbuj z "od 01.05." z description
+        // 🔁 Jeśli nadal brak daty — spróbuj z tekstu description
         if (!dateInfo) {
           const descMatch = description.match(/(\d{1,2})\.(\d{1,2})\./);
           if (descMatch) {

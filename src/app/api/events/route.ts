@@ -87,10 +87,9 @@ export async function GET() {
           "div.sUBHF-Qdb_RUPYOBkgO1a div:not(:has(div))"
         );
         const subdesc = subdescRaw?.textContent?.trim() || "";
-
         const rawDate =
           a
-            .querySelector("div.sUBHF-Qdb_RUPYOBkgO1a div:last-child")
+            .querySelector("div.sUBHF-Qdb_RUPYOBkgO1a > div")
             ?.textContent?.trim() || "";
 
         let dateInfo = "";
@@ -111,7 +110,7 @@ export async function GET() {
 
         // 🎯 2. Próba z description (np. "od 01.05. (11:00)")
         if (!dateInfo) {
-          const descMatch = description.match(/od\s+(\d{1,2})\.(\d{1,2})\./i);
+          const descMatch = description.match(/(\d{1,2})\.(\d{1,2})\./);
           if (descMatch) {
             const day = descMatch[1].padStart(2, "0");
             const month = descMatch[2].padStart(2, "0");

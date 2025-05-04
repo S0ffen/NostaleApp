@@ -81,6 +81,7 @@ export async function GET() {
         const description =
           a.querySelector("div._2g3JjlrRkzgUWXF57w3leW")?.textContent?.trim() ||
           "Brak opisu";
+
         const subdescRaw = a.querySelector(
           "div.sUBHF-Qdb_RUPYOBkgO1a div:not(:has(div))"
         );
@@ -88,18 +89,33 @@ export async function GET() {
 
         let dateInfo = "";
 
-        // 🎯 1. Próba z <div class="Focusable"> np. "30 kwi"
-        const focusDate = a.querySelector("div.Focusable")?.textContent?.trim();
-        const focusMatch = focusDate?.match(/^(\d{1,2})\s+([a-z]{3})$/i);
-        if (focusMatch) {
-          const day = focusMatch[1].padStart(2, "0");
-          const monthKey = focusMatch[2].toLowerCase().slice(0, 3);
+        // 🎯 1. Szukaj daty w <div class="Focusable"> wewnątrz sekcji subdesc
+        const subdescContainer = a.querySelector("div.sUBHF-Qdb_RUPYOBkgO1a");
+        let rawDate = "";
+
+        if (subdescContainer) {
+          const innerDivs = subdescContainer.querySelectorAll("div");
+          for (const div of innerDivs) {
+            const text = div.textContent?.trim() || "";
+            if (/^\d{1,2}\s+[a-zA-Złżźćńóę]{3,}\s+\d{4}$/.test(text)) {
+              rawDate = text;
+              break;
+            }
+          }
+        }
+
+        const fullDateMatch = rawDate.match(
+          /(\d{1,2})\s+([A-ZŁŚŹŻĆŃÓĘa-złśźżćńóę]{3})\s+(\d{4})/
+        );
+        if (fullDateMatch) {
+          const day = fullDateMatch[1].padStart(2, "0");
+          const monthKey = fullDateMatch[2].toLowerCase().slice(0, 3);
           const month = months[monthKey];
-          const year = inferYearFromMonth(parseInt(month));
+          const year = fullDateMatch[3];
           if (month) dateInfo = `${day}.${month}.${year}`;
         }
 
-        // 🎯 2. Próba z description (np. "od 01.05.")
+        // 🎯 2. Jeśli dalej brak daty – spróbuj z "od 01.05." z description
         if (!dateInfo) {
           const descMatch = description.match(/(\d{1,2})\.(\d{1,2})\./);
           if (descMatch) {
@@ -109,28 +125,6 @@ export async function GET() {
             dateInfo = `${day}.${month}.${year}`;
           }
         }
-
-        // 🎯 3. Próba z rawDate z subdesc (jeśli np. "4 CZE 2024")
-        const rawDate =
-          a
-            .querySelector("div.sUBHF-Qdb_RUPYOBkgO1a > div")
-            ?.textContent?.trim() || "";
-        if (!dateInfo) {
-          const subMatch = rawDate.match(
-            /(\d{1,2})\s+([A-ZŁŚŹŻĆŃÓĘa-złśźżćńóę]{3})\s+(\d{4})/
-          );
-          if (subMatch) {
-            const day = subMatch[1].padStart(2, "0");
-            const monthKey = subMatch[2].toLowerCase().slice(0, 3);
-            const month = months[monthKey];
-            const year = subMatch[3];
-            if (month) dateInfo = `${day}.${month}.${year}`;
-          }
-        }
-
-        const status =
-          a.querySelector("div.EVDkYKG_ikfyfH16lmQ-1")?.textContent?.trim() ||
-          "";
 
         results.push({
           title,

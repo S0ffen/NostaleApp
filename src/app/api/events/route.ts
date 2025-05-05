@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer";
 import { writeFile, mkdir } from "fs/promises";
+import { readFile } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 
@@ -10,6 +11,7 @@ type SteamEvent = {
   description: string;
   subdesc: string;
   link: string;
+  customTitle?: string;
 };
 
 export async function GET() {
@@ -157,8 +159,32 @@ export async function GET() {
     const publicDir = path.join(process.cwd(), "public");
     if (!existsSync(publicDir)) await mkdir(publicDir);
 
-    const filePath = path.join(publicDir, "steam-events.json");
-    await writeFile(filePath, JSON.stringify(events, null, 2), "utf-8");
+    // 🔄 Wczytaj istniejące dane, jeśli plik istnieje
+    const filePath = path.join(process.cwd(), "public", "steam-events.json");
+    let existingData: SteamEvent[] = [];
+    try {
+      if (existsSync(filePath)) {
+        const raw = await readFile(filePath, "utf-8");
+        existingData = JSON.parse(raw);
+      }
+    } catch (e) {
+      console.warn("⚠️ Nie udało się wczytać istniejącego JSONa:", e);
+    }
+
+    // 🔁 Zachowaj customTitle jeśli istnieje
+    const merged = events.map((newEv) => {
+      const match = existingData.find(
+        (oldEv) =>
+          oldEv.link === newEv.link ||
+          (oldEv.title === newEv.title && oldEv.date === newEv.date)
+      );
+      return {
+        ...newEv,
+        customTitle: match?.customTitle ?? "",
+      };
+    });
+
+    await writeFile(filePath, JSON.stringify(merged, null, 2), "utf-8");
 
     console.log(`📥 Pobrano ${events.length} eventów z Steam:`);
     events.forEach((ev, i) => {

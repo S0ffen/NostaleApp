@@ -2,12 +2,18 @@
 import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-
-import { parse, format, startOfWeek, getDay } from "date-fns";
+import {
+  parse,
+  format,
+  startOfWeek,
+  getDay,
+  differenceInCalendarDays,
+} from "date-fns";
 import { pl } from "date-fns/locale";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const locales = { pl };
-
 const localizer = dateFnsLocalizer({
   format,
   parse,
@@ -34,15 +40,12 @@ type FetchedEvent = {
 
 function normalizeDate(raw: string): Date {
   if (!raw || raw.toLowerCase().includes("brak")) return new Date();
-
-  if (/^\d{2}\.\d{2}\.\d{4}$/.test(raw)) {
+  if (/^\d{2}\.\d{2}\.\d{4}$/.test(raw))
     return parse(raw, "dd.MM.yyyy", new Date());
-  }
 
   const match = raw.match(/^(\d{1,2})\s+([a-zżźćńółęąś]{3,})$/i);
   if (match) {
     const day = match[1].padStart(2, "0");
-    const monthName = match[2].toLowerCase();
     const months: Record<string, string> = {
       sty: "01",
       lut: "02",
@@ -57,13 +60,14 @@ function normalizeDate(raw: string): Date {
       lis: "11",
       gru: "12",
     };
-    const month = months[monthName.slice(0, 3)];
-    if (month) {
-      const year = new Date().getFullYear();
-      return parse(`${day}.${month}.${year}`, "dd.MM.yyyy", new Date());
-    }
+    const month = months[match[2].toLowerCase().slice(0, 3)];
+    if (month)
+      return parse(
+        `${day}.${month}.${new Date().getFullYear()}`,
+        "dd.MM.yyyy",
+        new Date()
+      );
   }
-  const [currentDate, setCurrentDate] = useState(new Date());
 
   const subMatch = raw.match(/^(\d{1,2})\s+([A-ZŻŹĆŁŚĘÓŃ]{3})$/i);
   if (subMatch) {
@@ -84,10 +88,12 @@ function normalizeDate(raw: string): Date {
       gru: "12",
     };
     const month = months[monthTxt];
-    if (month) {
-      const year = new Date().getFullYear();
-      return parse(`${day}.${month}.${year}`, "dd.MM.yyyy", new Date());
-    }
+    if (month)
+      return parse(
+        `${day}.${month}.${new Date().getFullYear()}`,
+        "dd.MM.yyyy",
+        new Date()
+      );
   }
 
   return new Date();
@@ -96,9 +102,12 @@ function normalizeDate(raw: string): Date {
 function getEventColorClass(subdesc: string): string {
   const desc = subdesc.toLowerCase();
   if (desc.includes("zniżka")) return "green";
-  if (desc.includes("wydarzenie w grze")) return "gold";
-  if (desc.includes("wydarzenie z łupami")) return "gold";
-  if (desc.includes("wydarzenie z korzyściami")) return "gold";
+  if (
+    desc.includes("wydarzenie w grze") ||
+    desc.includes("wydarzenie z łupami") ||
+    desc.includes("wydarzenie z korzyściami")
+  )
+    return "gold";
   if (desc.includes("aktualności")) return "blue";
   return "";
 }
@@ -106,64 +115,137 @@ function getEventColorClass(subdesc: string): string {
 export default function CalendarPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [fetchedEvents, setFetchedEvents] = useState<FetchedEvent[]>([]);
+  const [editInputs, setEditInputs] = useState<string[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserEmail(user.email);
+        setIsAdmin(user.email === "admin@example.com");
+      }
+    });
+
     fetch("/steam-events.json")
       .then((res) => res.json())
       .then((data: FetchedEvent[]) => {
         setFetchedEvents(data);
-
-        const parsed: Event[] = data.map((e) => {
-          const titleToUse = e.customTitle || e.title;
-          const d = normalizeDate(e.date);
-          return {
-            title: titleToUse,
-            start: d,
-            end: d,
+        setEditInputs(data.map(() => ""));
+        setEvents(
+          data.map((e) => ({
+            title: (e.customTitle?.trim() || e.title || "Bez tytułu") as string,
+            start: normalizeDate(e.date),
+            end: normalizeDate(e.date),
             allDay: true,
             link: e.link,
-          };
-        });
-
-        setEvents(parsed);
+          }))
+        );
       });
   }, []);
 
-  function handleTitleChange(index: number, value: string) {
-    const updated = [...fetchedEvents];
-    updated[index].customTitle = value;
-    setFetchedEvents(updated);
-
-    const parsed: Event[] = updated.map((e) => {
-      const titleToUse = e.customTitle || e.title;
-      const d = normalizeDate(e.date);
-      return {
-        title: titleToUse,
-        start: d,
-        end: d,
-        allDay: true,
-        link: e.link,
-      };
-    });
-
-    setEvents(parsed);
+  function handleInputChange(index: number, value: string) {
+    const updated = [...editInputs];
+    updated[index] = value;
+    setEditInputs(updated);
   }
 
   function rowColor(subdesc: string): string {
-    if (subdesc.toLowerCase().includes("zniżka")) return "bg-green-100";
-    if (subdesc.toLowerCase().includes("wydarzenie w grze"))
+    const desc = subdesc.toLowerCase();
+    if (desc.includes("zniżka")) return "bg-green-100";
+    if (
+      desc.includes("wydarzenie w grze") ||
+      desc.includes("wydarzenie z łupami") ||
+      desc.includes("wydarzenie z korzyściami")
+    )
       return "bg-yellow-100";
-    if (subdesc.toLowerCase().includes("wydarzenie z łupami"))
-      return "bg-yellow-100";
-    if (subdesc.toLowerCase().includes("wydarzenie z korzyściami"))
-      return "bg-yellow-100";
-    if (subdesc.toLowerCase().includes("aktualności")) return "bg-blue-100";
+    if (desc.includes("aktualności")) return "bg-blue-100";
     return "";
+  }
+
+  function handleSave() {
+    if (!isAdmin) return;
+
+    if (confirm("Na pewno zapisać zmiany do pliku JSON?")) {
+      const updated = fetchedEvents.map((e, i) => ({
+        ...e,
+        customTitle:
+          editInputs[i].trim() === "" ? e.customTitle || "" : editInputs[i],
+      }));
+
+      fetch("/api/save-events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      })
+        .then((res) => {
+          if (res.ok) {
+            alert("Zapisano zmiany.");
+            setFetchedEvents(updated);
+            setEditInputs(updated.map(() => ""));
+            setEvents(
+              updated.map((e) => ({
+                title: e.customTitle?.trim() !== "" ? e.customTitle : e.title,
+                start: normalizeDate(e.date),
+                end: normalizeDate(e.date),
+                allDay: true,
+                link: e.link,
+              }))
+            );
+          } else {
+            alert("Błąd zapisu.");
+          }
+        })
+        .catch(() => alert("Błąd sieci przy zapisie."));
+    }
+  }
+
+  const filteredEvents = fetchedEvents.filter((e) => {
+    const title = e.customTitle?.trim() || e.title;
+    return title.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  function handleUpdate() {
+    if (!isAdmin) return;
+
+    if (confirm("Pobrać najnowsze dane z /api/events?")) {
+      fetch("/api/events")
+        .then((res) => {
+          if (!res.ok) throw new Error("Błąd pobierania");
+          return res.json();
+        })
+        .then((data: FetchedEvent[]) => {
+          setFetchedEvents(data);
+          setEditInputs(data.map(() => ""));
+          setEvents(
+            data.map((e) => ({
+              title: e.customTitle?.trim()
+                ? e.customTitle.trim()
+                : e.title || "",
+              start: normalizeDate(e.date),
+              end: normalizeDate(e.date),
+              allDay: true,
+              link: e.link,
+            }))
+          );
+          alert("Dane zostały zaktualizowane.");
+        })
+        .catch(() => alert("Błąd przy aktualizacji danych."));
+    }
   }
 
   return (
     <div className="flex flex-col gap-6 p-6">
-      {/* KALENDARZ NA GÓRZE */}
+      {isAdmin && (
+        <button
+          onClick={handleUpdate}
+          className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+          Aktualizuj dane
+        </button>
+      )}
+
       <div className="w-full">
         <h2 className="text-xl font-semibold mb-4">Kalendarz pomocniczy</h2>
         <Calendar
@@ -175,13 +257,11 @@ export default function CalendarPage() {
           views={["month"]}
           culture="pl"
           onSelectEvent={(event) => {
-            if (event.link) {
-              window.open(event.link, "_blank");
-            }
+            if (event.link) window.open(event.link, "_blank");
           }}
           eventPropGetter={(event) => {
             const fetched = fetchedEvents.find(
-              (e) => (e.customTitle || e.title) === event.title
+              (e) => (e.customTitle?.trim() || e.title) === event.title
             );
             const color = fetched ? getEventColorClass(fetched.subdesc) : "";
             return {
@@ -201,34 +281,83 @@ export default function CalendarPage() {
         />
       </div>
 
-      {/* LISTA EVENTÓW POD KALENDARZEM */}
+      <div className="w-full mb-2 text-right text-sm text-gray-600">
+        {userEmail ? `Zalogowano jako: ${userEmail}` : "Nie zalogowano"}
+      </div>
+
+      {isAdmin && (
+        <button
+          onClick={handleSave}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Zapisz zmiany
+        </button>
+      )}
+
       <div className="w-full">
         <h1 className="text-2xl font-bold mb-4">
           Lista eventów NosTale (Steam)
         </h1>
+
+        <input
+          type="text"
+          placeholder="Szukaj eventu..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="mb-4 p-2 border rounded w-full"
+        />
+
         <table className="w-full text-sm border border-gray-300 rounded">
           <thead>
             <tr className="bg-gray-100">
               <th className="p-2 text-left">Tytuł</th>
               <th className="p-2 text-left">Data</th>
+              <th className="p-2 text-left">Link</th>
+              <th className="p-2 text-left">Ile dni temu</th>
               <th className="p-2 text-left">Edytuj</th>
             </tr>
           </thead>
           <tbody>
-            {fetchedEvents.map((e, i) => (
-              <tr key={i} className={`border-t ${rowColor(e.subdesc)}`}>
-                <td className="p-2">{e.customTitle || e.title}</td>
-                <td className="p-2">{e.date}</td>
-                <td className="p-2">
-                  <input
-                    value={e.customTitle || ""}
-                    onChange={(ev) => handleTitleChange(i, ev.target.value)}
-                    className="border rounded p-1 w-full"
-                    placeholder="Własny tytuł"
-                  />
-                </td>
-              </tr>
-            ))}
+            {filteredEvents.map((e, i) => {
+              const parsedDate = normalizeDate(e.date);
+              const daysAgo = e.date.toLowerCase().includes("brak")
+                ? "-"
+                : `${differenceInCalendarDays(
+                    new Date(),
+                    parsedDate
+                  )} dni temu`;
+              return (
+                <tr key={i} className={`border-t ${rowColor(e.subdesc)}`}>
+                  <td className="p-2">
+                    {e.customTitle?.trim() !== "" ? e.customTitle : e.title}
+                  </td>
+                  <td className="p-2">{e.date}</td>
+                  <td className="p-2">
+                    <a
+                      href={e.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      Otwórz
+                    </a>
+                  </td>
+                  <td className="p-2">{daysAgo}</td>
+                  <td className="p-2">
+                    {isAdmin ? (
+                      <input
+                        value={editInputs[i] || ""}
+                        onChange={(ev) => handleInputChange(i, ev.target.value)}
+                        className="border rounded p-1 w-full"
+                        placeholder="Własny tytuł"
+                      />
+                    ) : (
+                      <span className="text-gray-500 italic">Tylko admin</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

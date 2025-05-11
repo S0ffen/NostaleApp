@@ -153,14 +153,16 @@ export default function CalendarPage() {
 
   function rowColor(subdesc: string): string {
     const desc = subdesc.toLowerCase();
-    if (desc.includes("zniżka")) return "bg-green-100";
+    if (desc.includes("zniżka")) return "bg-green-200";
     if (
       desc.includes("wydarzenie w grze") ||
       desc.includes("wydarzenie z łupami") ||
-      desc.includes("wydarzenie z korzyściami")
+      desc.includes("wydarzenie z korzyściami") ||
+      desc.includes("premia do pd")
     )
-      return "bg-yellow-100";
-    if (desc.includes("aktualności")) return "bg-blue-100";
+      return "bg-yellow-200";
+    if (desc.includes("aktualności") || desc.includes("ważna aktualizacja"))
+      return "bg-blue-300";
     return "";
   }
 

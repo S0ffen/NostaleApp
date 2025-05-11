@@ -3,23 +3,26 @@
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const email = login;
       await signInWithEmailAndPassword(auth, email, password);
-      alert("Zalogowano pomyślnie!");
-      window.location.href = "/calendar";
+      toast.success("Zalogowano pomyślnie!");
+      router.push("/calendar");
     } catch (error: unknown) {
       if (error instanceof Error) {
-        alert(error.message);
+        toast.error(`Błąd: ${error.message}`);
       } else {
-        alert("Wystąpił nieznany błąd.");
+        toast.error("Wystąpił nieznany błąd.");
       }
     }
   };

@@ -1,5 +1,53 @@
 [
   {
+    "title": "Teraz w NosMarkecie: Wieczne Pudełko Faraona",
+    "description": "Wejdź do świata starożytnych mocy! Od 19.05. (11:00) do 26.05. (godz. 11:00 CEST) w NosMarkecie czeka na Ciebie Wieczne Pudełko Faraona.",
+    "subdesc": "Zniżka na przedmioty w grze lub DLC",
+    "date": "19.05.2025",
+    "link": "https://store.steampowered.com/news/app/550470/view/515209445812209871",
+    "customTitle": ""
+  },
+  {
+    "title": "[17.05. - 18.05.] 28h Happy Hour - deszcz dolarów!",
+    "description": "Zgarnij podczas naszej 28h Happy Hour przy zakupie NosDolarów 30% więcej tej cennej waluty! Okres: 17.05., godz. 17:00 (CEST) do 18.05., godz. 21:00 (CEST).",
+    "subdesc": "Zniżka na przedmioty w grze lub DLC",
+    "date": "17.05.2025",
+    "link": "https://store.steampowered.com/news/app/550470/view/515209445812209883",
+    "customTitle": ""
+  },
+  {
+    "title": "Podwójna eventowa akcja",
+    "description": "NosBohaterze, przygotuj się: Kraina Żyjących obdarza Cię podwojonym czasem PD! Od 16.05. (0:00) do 18.05. (godz.",
+    "subdesc": "Wydarzenie w grze",
+    "date": "16.05.2025",
+    "link": "https://store.steampowered.com/news/app/550470/view/518587779952672963",
+    "customTitle": ""
+  },
+  {
+    "title": "Teraz w NosMarkecie: 40% rabatu na przedmioty run i tatuaży",
+    "description": "Od 15.05. (11:00) do 17.05. (godz. 11:00 CEST) w NosMarkecie czeka na Ciebie wiele przedmiotów run i tatuaży w obniżonej cenie! Zgarnij je i zaoszczędź mnóstwo NosDolarów!",
+    "subdesc": "Zniżka na przedmioty w grze lub DLC",
+    "date": "15.05.2025",
+    "link": "https://store.steampowered.com/news/app/550470/view/515209445812209865",
+    "customTitle": ""
+  },
+  {
+    "title": "Teraz w NosMarkecie: 40% rabatu na perfumy",
+    "description": "Od 13.05. (11:00) do 15.05. (godz. 11:00 CEST) w NosMarkecie czekają na Ciebie perfumy w obniżonej cenie! Zgarnij je teraz i oszczędź masę NosDolarów!",
+    "subdesc": "Zniżka na przedmioty w grze lub DLC",
+    "date": "13.05.2025",
+    "link": "https://store.steampowered.com/news/app/550470/view/515209445812209252",
+    "customTitle": ""
+  },
+  {
+    "title": "Koło NosFortuny Faraona",
+    "description": "To Koło NosFortuny z dwoma poziomami skrywa dla Ciebie wiele nagród! Zakręć od 12.05. (11:00) do 19.05. (godz.",
+    "subdesc": "Zniżka na przedmioty w grze lub DLC",
+    "date": "12.05.2025",
+    "link": "https://store.steampowered.com/news/app/550470/view/515209445812207632",
+    "customTitle": ""
+  },
+  {
     "title": "[10.05. - 12.05.] 30% rabatu na zakręcenie Kołem NosFortuny!",
     "description": "Od 10.05. (11:00 CEST) do 12.05. (11:00 CEST) możesz kręcić Kołem NosFortuny taniej o 30%!",
     "subdesc": "Zniżka na przedmioty w grze lub DLC",
@@ -24,14 +72,6 @@
     "customTitle": ""
   },
   {
-    "title": "Event: ekskluzywny zwierzak w zapieczętowanym pojemniku",
-    "description": "Tajemnicze zapieczętowane pojemniki krążą po świecie NosTale. Otoczone są one potężną tajemniczą aurą i tylko grupa doświadczonych poszukiwaczy przygód może je otworzyć.",
-    "subdesc": "Wydarzenie w grze",
-    "date": "brak daty",
-    "link": "https://store.steampowered.com/news/app/550470/view/515208812015125982",
-    "customTitle": ""
-  },
-  {
     "title": "Nowe nagrody na Kole NosFortuny",
     "description": "Mamy ekscytujące wieści: na Kole NosFortuny czeka na Ciebie od 7.05. o godz. 11:00 CEST wiele nowych przedmiotów przydatnych podczas Twoich przygód.",
     "subdesc": "Aktualności",
@@ -48,6 +88,14 @@
     "customTitle": ""
   },
   {
+    "title": "Event: ekskluzywny zwierzak w zapieczętowanym pojemniku",
+    "description": "Tajemnicze zapieczętowane pojemniki krążą po świecie NosTale. Otoczone są one potężną tajemniczą aurą i tylko grupa doświadczonych poszukiwaczy przygód może je otworzyć.",
+    "subdesc": "Wydarzenie w grze",
+    "date": "07.05.2025",
+    "link": "https://store.steampowered.com/news/app/550470/view/515208812015125982",
+    "customTitle": ""
+  },
+  {
     "title": "[06.05. - 08.05.] Wypełnione po brzegi losowe skrzynie obdarzają nową siłą",
     "description": "Zgarnij mnóstwo piór anioła i kryształów pełni księżyca! Dwie wypełnione po brzegi skrzynie pomogą Ci w ulepszaniu Twoich kart specjalisty.",
     "subdesc": "Zniżka na przedmioty w grze lub DLC",
@@ -61,7 +109,7 @@
     "subdesc": "Zniżka na przedmioty w grze lub DLC",
     "date": "05.05.2025",
     "link": "https://store.steampowered.com/news/app/550470/view/515208812015124504",
-    "customTitle": "Zjawa Nocy"
+    "customTitle": ""
   },
   {
     "title": "[03.05. - 04.05.] 28h Happy Hour - deszcz dolarów!",
@@ -192,19 +240,19 @@
     "customTitle": ""
   },
   {
-    "title": "Teraz w NosMarkecie: Turbopudełka NosFire",
-    "description": "Ogniste płomienie i rozżarzona lawa: w tych całkiem nowych turbopudełkach znajdziesz wszystko, czego potrzebujesz, aby w pełni rozwinąć skrzydła na serwerze eventowym NosFire!",
-    "subdesc": "Zniżka na przedmioty w grze lub DLC",
-    "date": "brak daty",
-    "link": "https://store.steampowered.com/news/app/550470/view/642433677808108359",
-    "customTitle": ""
-  },
-  {
     "title": "Teraz online: serwery eventowe NosFire",
     "description": "Czujesz już gorąco? Serwery eventowe NosFire są teraz online! Wbijaj poziomy swojej postaci szybciej niż kiedykolwiek wcześniej i oprócz tego korzystaj z eventów, dopalaczy i...",
     "subdesc": "Aktualności",
     "date": "15.04.2025",
     "link": "https://store.steampowered.com/news/app/550470/view/642433677808108526",
+    "customTitle": ""
+  },
+  {
+    "title": "Teraz w NosMarkecie: Turbopudełka NosFire",
+    "description": "Ogniste płomienie i rozżarzona lawa: w tych całkiem nowych turbopudełkach znajdziesz wszystko, czego potrzebujesz, aby w pełni rozwinąć skrzydła na serwerze eventowym NosFire!",
+    "subdesc": "Zniżka na przedmioty w grze lub DLC",
+    "date": "brak daty",
+    "link": "https://store.steampowered.com/news/app/550470/view/642433677808108359",
     "customTitle": ""
   },
   {
@@ -1960,19 +2008,19 @@
     "customTitle": ""
   },
   {
-    "title": "Serwer Letnia Oaza: to już dzisiaj!",
-    "description": "Masz już spakowane walizki na swój magiczny relaks? Albowiem dzisiaj nastąpi otwarcie serwerów Letnia Oaza i letnia przygoda w NosTale może się rozpocząć!",
-    "subdesc": "Aktualności",
-    "date": "07.08.2024",
-    "link": "https://store.steampowered.com/news/app/550470/view/4338740162779417644",
-    "customTitle": ""
-  },
-  {
     "title": "Wytworna Dorożka w NosMarkecie",
     "description": "Odwiedź teraz NosMarket i wsiądź do Szlachetnej Dorożki Króliczka, a zdobędziesz uznanie swoich przyjaciół. Oferta dostępna jest tylko przez krótki czas – mianowicie od 07.08.",
     "subdesc": "Zniżka na przedmioty w grze lub DLC",
     "date": "07.08.2024",
     "link": "https://store.steampowered.com/news/app/550470/view/4338740162776089721",
+    "customTitle": ""
+  },
+  {
+    "title": "Serwer Letnia Oaza: to już dzisiaj!",
+    "description": "Masz już spakowane walizki na swój magiczny relaks? Albowiem dzisiaj nastąpi otwarcie serwerów Letnia Oaza i letnia przygoda w NosTale może się rozpocząć!",
+    "subdesc": "Aktualności",
+    "date": "07.08.2024",
+    "link": "https://store.steampowered.com/news/app/550470/view/4338740162779417644",
     "customTitle": ""
   },
   {
@@ -2048,19 +2096,19 @@
     "customTitle": ""
   },
   {
-    "title": "[26.07. - 29.07.] Event: więcej szczęścia przy ulepszaniu",
-    "description": "Fortuna obdarowuje swoim szczęściem w NosTale! Odbędą się następujące eventy wzmacniające: Zafunduj ulepszenie kartom specjalisty: przez krótki czas masz 50% więcej szansy na...",
-    "subdesc": "Wydarzenie w grze",
-    "date": "26.07.2024",
-    "link": "https://store.steampowered.com/news/app/550470/view/4338739528775158824",
-    "customTitle": ""
-  },
-  {
     "title": "Uwaga: 3-krotna ilość punktów reputacji!",
     "description": "Od 26.07. (godz. 11:00) do 29.07. (godz. 11:00 CEST) możecie wziąć udział w evencie punktów reputacji: W ramach wszystkich aktywności i przedmiotów, za które można otrzymać punkty...",
     "subdesc": "Wydarzenie w grze",
     "date": "26.07.2024",
     "link": "https://store.steampowered.com/news/app/550470/view/4338739528775340554",
+    "customTitle": ""
+  },
+  {
+    "title": "[26.07. - 29.07.] Event: więcej szczęścia przy ulepszaniu",
+    "description": "Fortuna obdarowuje swoim szczęściem w NosTale! Odbędą się następujące eventy wzmacniające: Zafunduj ulepszenie kartom specjalisty: przez krótki czas masz 50% więcej szansy na...",
+    "subdesc": "Wydarzenie w grze",
+    "date": "26.07.2024",
+    "link": "https://store.steampowered.com/news/app/550470/view/4338739528775158824",
     "customTitle": ""
   },
   {
@@ -2152,19 +2200,19 @@
     "customTitle": ""
   },
   {
-    "title": "[10.07. - 12.07.] Wypełnione po brzegi losowe skrzynie obdarzają nową siłą",
-    "description": "Zgarnij mnóstwo piór anioła i kryształów pełni księżyca! Dwie wypełnione po brzegi skrzynie pomogą Ci w ulepszaniu Twoich kart specjalisty.",
-    "subdesc": "Zniżka na przedmioty w grze lub DLC",
-    "date": "10.07.2024",
-    "link": "https://store.steampowered.com/news/app/550470/view/4241909599832633051",
-    "customTitle": ""
-  },
-  {
     "title": "Letni event z Petem O‘Pengiem",
     "description": "Zbliża się tegoroczny letni event! I znowu spotkasz się ze starym znajomym szubrawcem i budzącym grozę korsarzem Kapitanem Petem O’Pengiem.",
     "subdesc": "Wydarzenie w grze",
     "date": "10.07.2024",
     "link": "https://store.steampowered.com/news/app/550470/view/4241909599835206976",
+    "customTitle": ""
+  },
+  {
+    "title": "[10.07. - 12.07.] Wypełnione po brzegi losowe skrzynie obdarzają nową siłą",
+    "description": "Zgarnij mnóstwo piór anioła i kryształów pełni księżyca! Dwie wypełnione po brzegi skrzynie pomogą Ci w ulepszaniu Twoich kart specjalisty.",
+    "subdesc": "Zniżka na przedmioty w grze lub DLC",
+    "date": "10.07.2024",
+    "link": "https://store.steampowered.com/news/app/550470/view/4241909599832633051",
     "customTitle": ""
   },
   {
@@ -3037,6 +3085,38 @@
     "subdesc": "Zniżka na przedmioty w grze lub DLC",
     "date": "13.02.2024",
     "link": "https://store.steampowered.com/news/app/550470/view/4029101838398968050",
+    "customTitle": ""
+  },
+  {
+    "title": "Event: Czarujące walentynki",
+    "description": "Na pewno w NosVille jest ktoś, komu już od dawna chcesz powiedzieć, jak bardzo go lubisz. Walentynki to idealny moment, aby w końcu zdobyć się na odwagę: czekają na Ciebie...",
+    "subdesc": "Wydarzenie w grze",
+    "date": "13.02.2024",
+    "link": "https://store.steampowered.com/news/app/550470/view/4029101838416939887",
+    "customTitle": ""
+  },
+  {
+    "title": "Pudełko Fortuny Morskich Głębin",
+    "description": "Zanurkuj pod wodę i znajdź spektakularne skarby w morskich głębinach! Zgarnij od 12.02. (godz. 11:00 CET) do 14.02. (godz.",
+    "subdesc": "Zniżka na przedmioty w grze lub DLC",
+    "date": "12.02.2024",
+    "link": "https://store.steampowered.com/news/app/550470/view/4029101838398871215",
+    "customTitle": ""
+  },
+  {
+    "title": "Czas bonusu w NosTale",
+    "description": "Zrób miejsce w ekwipunku i przygotuj się na wspaniały czas bonusu w NosMarkecie! Od 12.02. o godz. 11:00 do 19.02. o godz.",
+    "subdesc": "Zniżka na przedmioty w grze lub DLC",
+    "date": "12.02.2024",
+    "link": "https://store.steampowered.com/news/app/550470/view/4029101838406495689",
+    "customTitle": ""
+  },
+  {
+    "title": "[10.02. - 11.02.] 28h Happy Hour - deszcz dolarów!",
+    "description": "Zgarnij podczas naszej 28h Happy Hour przy zakupie NosDolarów 30% więcej tej cennej waluty! Okres: 10.02., godz. 17:00 (CET) do 11.02., godz. 21:00 (CET).",
+    "subdesc": "Zniżka na przedmioty w grze lub DLC",
+    "date": "10.02.2024",
+    "link": "https://store.steampowered.com/news/app/550470/view/4029101838406038976",
     "customTitle": ""
   }
 ]

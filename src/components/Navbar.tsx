@@ -24,7 +24,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      setUserEmail(null);
+      await fetch("/api/auth/logout", { method: "POST" }); // usuwa ciasteczko
       router.push("/login");
     } catch (error) {
       console.error("Błąd podczas wylogowywania:", error);
@@ -39,10 +39,16 @@ export default function Navbar() {
         <Link href="/" className="hover:text-blue-400 font-semibold">
           🏠 Strona główna
         </Link>
-        <Link href="/calendar" className="hover:text-blue-400 font-semibold">
+        <Link
+          href="/protected/calendar"
+          className="hover:text-blue-400 font-semibold"
+        >
           📅 Kalendarz
         </Link>
-        <Link href="/simulator" className="hover:text-blue-400 font-semibold">
+        <Link
+          href="/protected/simulator"
+          className="hover:text-blue-400 font-semibold"
+        >
           📊 Symulator
         </Link>
       </div>

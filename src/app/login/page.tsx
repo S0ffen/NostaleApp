@@ -15,9 +15,25 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const email = login;
-      await signInWithEmailAndPassword(auth, email, password);
+      // Waiting for user to sign in
+      const usersCredentials = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      // Sending the token to the server
+      const token = await usersCredentials.user.getIdToken();
+      await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }),
+      });
+      console.log("Token from Firebase:", token);
+      // Routing to the protected page
       toast.success("Zalogowano pomyślnie!");
-      router.push("/calendar");
+      router.push("/protected/calendar");
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(`Błąd: ${error.message}`);

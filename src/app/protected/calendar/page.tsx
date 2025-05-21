@@ -1,26 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import {
-  parse,
-  format,
-  startOfWeek,
-  getDay,
-  differenceInCalendarDays,
-} from "date-fns";
-import { pl } from "date-fns/locale";
+import { parse, differenceInCalendarDays } from "date-fns";
+import { redirect } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-
-const locales = { pl };
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
-  getDay,
-  locales,
-});
 
 type Event = {
   title: string;
@@ -247,41 +231,6 @@ export default function CalendarPage() {
           Aktualizuj dane
         </button>
       )}
-
-      <div className="w-full">
-        <h2 className="text-xl font-semibold mb-4">Kalendarz pomocniczy</h2>
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 600 }}
-          views={["month"]}
-          culture="pl"
-          onSelectEvent={(event) => {
-            if (event.link) window.open(event.link, "_blank");
-          }}
-          eventPropGetter={(event) => {
-            const fetched = fetchedEvents.find(
-              (e) => (e.customTitle?.trim() || e.title) === event.title
-            );
-            const color = fetched ? getEventColorClass(fetched.subdesc) : "";
-            return {
-              style: {
-                backgroundColor:
-                  color === "green"
-                    ? "#c6f6d5"
-                    : color === "gold"
-                    ? "#fefcbf"
-                    : color === "blue"
-                    ? "#bee3f8"
-                    : undefined,
-                color: "#000",
-              },
-            };
-          }}
-        />
-      </div>
 
       <div className="w-full mb-2 text-right text-sm text-gray-600">
         {userEmail ? `Zalogowano jako: ${userEmail}` : "Nie zalogowano"}

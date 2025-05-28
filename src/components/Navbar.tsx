@@ -36,7 +36,7 @@ export default function Navbar() {
   return (
     <nav className="bg-gray-800 border-b border-gray-700 px-6 py-4 flex items-center justify-between text-sm text-white">
       <div className="flex gap-8">
-        <Link href="/" className="hover:text-blue-400 font-semibold">
+        <Link href="" className="hover:text-blue-400 font-semibold">
           🏠 Strona główna
         </Link>
         <Link

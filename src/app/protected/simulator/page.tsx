@@ -223,7 +223,7 @@ function simulateUpgrade(level: number, eventBonus: number): UpgradeResult {
   if (!chances) return "fail"; // brak danych dla kolejnego poziomu
 
   let success = chances.success + eventBonus;
-  let destroy = chances.destroy;
+  const destroy = chances.destroy;
   let fail = 100 - success - destroy;
 
   if (success > 100) success = 100;
@@ -298,7 +298,7 @@ export default function SimulatorPage() {
   }, [stats]); // <-- tylko jeśli `stats` się zmienia, wtedy przelicza
 
   const handleSimulate = () => {
-    let used = {
+    const used = {
       feathers: 0,
       Fullmoons: 0,
       Souls: 0,

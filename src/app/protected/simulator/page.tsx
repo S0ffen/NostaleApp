@@ -218,11 +218,7 @@ const upgradeChances: Record<
     Scrolls: 1,
   },
 };
-function simulateUpgrade(
-  level: number,
-  eventBonus: number,
-  allowDestroy: boolean
-): UpgradeResult {
+function simulateUpgrade(level: number, eventBonus: number): UpgradeResult {
   const chances = upgradeChances[level + 1];
   if (!chances) return "fail"; // brak danych dla kolejnego poziomu
 
@@ -244,8 +240,7 @@ function simulateUpgrade(
 }
 function getCurrentChances(
   level: number,
-  eventBonus: number,
-  allowDestroy: boolean
+  eventBonus: number
 ): { success: number; fail: number; destroy: number } {
   const chances = upgradeChances[level + 1];
   if (!chances) return { success: 0, fail: 0, destroy: 0 };
@@ -262,12 +257,10 @@ function getCurrentChances(
 export default function SimulatorPage() {
   const [level, setLevel] = useState(0);
   const [eventBonus, setEventBonus] = useState(0);
-  const [allowDestroy, setAllowDestroy] = useState(false);
   const [tries, setTries] = useState(1);
   const [stats, setStats] = useState<
     Record<number, { success: number; fail: number; destroy: number }>
   >({});
-  const [totalTries, setTotalTries] = useState(0);
   const requirements = upgradeChances[level + 1];
   const [cost, setCost] = useState(0);
   const [materialsUsed, setMaterialsUsed] = useState({
@@ -317,7 +310,7 @@ export default function SimulatorPage() {
     const updatedStats = { ...stats };
     let currentLevel = level;
     for (let i = 0; i < tries; i++) {
-      const result = simulateUpgrade(currentLevel, eventBonus, allowDestroy);
+      const result = simulateUpgrade(currentLevel, eventBonus);
       console.log("result", result);
       const currentReq = upgradeChances[currentLevel + 1];
       if (!currentReq) break; // wyjście z pętli jeśli brak danych
@@ -373,7 +366,6 @@ export default function SimulatorPage() {
   const handleReset = () => {
     setLevel(0);
     setEventBonus(0);
-    setAllowDestroy(false);
     setTries(1);
     setStats({});
     setCost(0);
@@ -392,11 +384,7 @@ export default function SimulatorPage() {
       Dragon_Gem: 0,
     });
   };
-  const { success, fail, destroy } = getCurrentChances(
-    level,
-    eventBonus,
-    allowDestroy
-  );
+  const { success, fail, destroy } = getCurrentChances(level, eventBonus);
 
   return (
     <div className="flex flex-row items-center justify-center min-h-screen bg-gray-900 text-white p-4">

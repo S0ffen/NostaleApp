@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { parse, differenceInCalendarDays } from "date-fns";
-import { redirect } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
@@ -83,19 +82,6 @@ function normalizeDate(raw: string): Date {
   return new Date();
 }
 
-function getEventColorClass(subdesc: string): string {
-  const desc = subdesc.toLowerCase();
-  if (desc.includes("zniżka")) return "green";
-  if (
-    desc.includes("wydarzenie w grze") ||
-    desc.includes("wydarzenie z łupami") ||
-    desc.includes("wydarzenie z korzyściami")
-  )
-    return "gold";
-  if (desc.includes("aktualności")) return "blue";
-  return "";
-}
-
 export default function CalendarPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [fetchedEvents, setFetchedEvents] = useState<FetchedEvent[]>([]);
@@ -104,6 +90,7 @@ export default function CalendarPage() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+  console.log("events:", events);
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {

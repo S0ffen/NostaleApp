@@ -5,6 +5,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { getFirebaseErrorMessage } from "@/lib/getFirebaseErrorMessage";
 
 export default function LoginPage() {
   const [login, setLogin] = useState("");
@@ -23,23 +24,28 @@ export default function LoginPage() {
       );
       // Sending the token to the server
       const token = await usersCredentials.user.getIdToken();
-      await fetch("/api/auth/login", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ token }),
       });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(
+          data?.error?.message || "Błąd logowania po stronie serwera."
+        );
+      }
+
       console.log("Token from Firebase:", token);
       // Routing to the protected page
       toast.success("Zalogowano pomyślnie!");
       router.push("/protected/calendar");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(`Błąd: ${error.message}`);
-      } else {
-        toast.error("Wystąpił nieznany błąd.");
-      }
+    } catch (error: any) {
+      console.error("Błąd logowania:", error);
+      toast.error(getFirebaseErrorMessage(error));
     }
   };
 

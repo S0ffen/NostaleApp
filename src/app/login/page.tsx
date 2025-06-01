@@ -17,6 +17,7 @@ export default function LoginPage() {
     try {
       const email = login;
       // Waiting for user to sign in
+
       const usersCredentials = await signInWithEmailAndPassword(
         auth,
         email,
@@ -31,7 +32,7 @@ export default function LoginPage() {
         },
         body: JSON.stringify({ token }),
       });
-
+      console.log("Response from server:", response);
       if (!response.ok) {
         const data = await response.json();
         throw new Error(
@@ -43,8 +44,8 @@ export default function LoginPage() {
       // Routing to the protected page
       toast.success("Zalogowano pomyślnie!");
       router.push("/protected/calendar");
-    } catch (error: any) {
-      console.error("Błąd logowania:", error);
+    } catch (error: unknown) {
+      console.error("Błąd logowania test:", error);
       toast.error(getFirebaseErrorMessage(error));
     }
   };

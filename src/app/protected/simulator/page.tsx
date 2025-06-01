@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Toast, { toast } from "react-hot-toast";
 
 type UpgradeResult = "success" | "fail" | "destroy";
 const upgradeChances: Record<
@@ -221,8 +222,8 @@ const upgradeChances: Record<
 function simulateUpgrade(level: number, eventBonus: number): UpgradeResult {
   const chances = upgradeChances[level + 1];
   if (!chances) return "fail"; // brak danych dla kolejnego poziomu
-
-  let success = chances.success + eventBonus;
+  console.log("SZANSA Z FUNKCJI", eventBonus);
+  let success = chances.success * eventBonus;
   const destroy = chances.destroy;
   let fail = 100 - success - destroy;
 
@@ -238,14 +239,15 @@ function simulateUpgrade(level: number, eventBonus: number): UpgradeResult {
   if (roll < success + fail) return "fail";
   return "destroy";
 }
-function getCurrentChances(
-  level: number,
-  eventBonus: number
-): { success: number; fail: number; destroy: number } {
+function getCurrentChances(level: number): {
+  success: number;
+  fail: number;
+  destroy: number;
+} {
   const chances = upgradeChances[level + 1];
   if (!chances) return { success: 0, fail: 0, destroy: 0 };
 
-  let success = chances.success + eventBonus;
+  let success = chances.success;
   if (success > 100) success = 100;
 
   const destroy = chances.destroy;
@@ -256,7 +258,7 @@ function getCurrentChances(
 
 export default function SimulatorPage() {
   const [level, setLevel] = useState(0);
-  const [eventBonus, setEventBonus] = useState(0);
+  const [eventBonus, setEventBonus] = useState(1); // domyślnie bez bonusu
   const [tries, setTries] = useState(1);
   const [stats, setStats] = useState<
     Record<number, { success: number; fail: number; destroy: number }>
@@ -313,6 +315,9 @@ export default function SimulatorPage() {
       const result = simulateUpgrade(currentLevel, eventBonus);
       console.log("result", result);
       const currentReq = upgradeChances[currentLevel + 1];
+      if (currentLevel >= 20) {
+        toast.error("Osiągnięto maksymalny poziom ulepszenia (20).");
+      }
       if (!currentReq) break; // wyjście z pętli jeśli brak danych
       console.log("currentReq", currentReq);
 
@@ -384,7 +389,7 @@ export default function SimulatorPage() {
       Dragon_Gem: 0,
     });
   };
-  const { success, fail, destroy } = getCurrentChances(level, eventBonus);
+  const { success, fail, destroy } = getCurrentChances(level);
 
   return (
     <div className="flex flex-row items-center justify-center min-h-screen bg-gray-900 text-white p-4">
@@ -477,6 +482,29 @@ export default function SimulatorPage() {
             >
               Resetuj
             </button>
+            <div>
+              <label className="text-white">Poziom:</label>
+              <input
+                type="text"
+                inputMode="numeric" // pokaże mobilną klawiaturę numeryczną
+                value={level}
+                onChange={(e) => {
+                  const raw = e.target.value;
+
+                  // usuń wszystko co nie jest cyfrą
+                  const cleaned = raw.replace(/\D/g, "");
+
+                  // usuń wiodące zera
+                  const noLeadingZeros = cleaned.replace(/^0+/, "");
+
+                  // domyślnie 0 jeśli puste
+                  const final = noLeadingZeros === "" ? "0" : noLeadingZeros;
+
+                  setLevel(Number(final));
+                }}
+                className="w-12 text-center bg-gray-800 rounded text-white"
+              />
+            </div>
           </div>
 
           <button>
@@ -586,7 +614,22 @@ export default function SimulatorPage() {
         <span className="text-blue-400">
           Koszt {cost.toLocaleString("en-EN")}
         </span>
+        <div className="bg-gray-800 p-2 rounded mt-4">
+          <span className="text-yellow-400 block">Opcje:</span>
+          <div>
+            <label className="text-white">
+              {"Event: "}
+              <input
+                type="checkbox"
+                className="ml-2"
+                checked={eventBonus > 1}
+                onChange={(e) => setEventBonus(e.target.checked ? 1.5 : 1)}
+              />
+            </label>
+          </div>
+        </div>
       </div>
+
       {/* Statystyki */}
       <div className="bg-black border border-gray-600 rounded-lg p-6 w-full max-w-md text-center space-y-4 ml-4">
         <h2 className="text-xl bg-gray-800 py-2 rounded-t text-white font-semibold mt-6">

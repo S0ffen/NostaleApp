@@ -2,7 +2,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import ClientWrapper from "@/components/ClientWrapper";
 
 export default async function ProtectedLayout({
   children,

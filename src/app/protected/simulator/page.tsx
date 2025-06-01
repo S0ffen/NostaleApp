@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Toast, { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 type UpgradeResult = "success" | "fail" | "destroy";
 const upgradeChances: Record<

@@ -1,28 +1,35 @@
 export function getFirebaseErrorMessage(error: unknown): string {
-  if (typeof error === "string") return error;
+  type FirebaseErrorLike = {
+    code?: string;
+    message?: string;
+    error?: {
+      message?: string;
+    };
+  };
 
+  const firebaseError = error as FirebaseErrorLike;
+
+  const raw =
+    firebaseError.code ||
+    firebaseError.error?.message ||
+    firebaseError.message ||
+    (typeof error === "string" ? error : "");
+
+  console.error("kod błędu (surowy):", raw);
+
+  if (raw.includes("auth/invalid-email")) return "Nieprawidłowy adres e-mail.";
+  if (raw.includes("auth/user-not-found")) return "Użytkownik nie istnieje.";
+  if (raw.includes("auth/wrong-password")) return "Nieprawidłowe hasło.";
   if (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    typeof (error as any).code === "string"
-  ) {
-    const code = (error as any).code;
+    raw.includes("auth/too-many-requests") ||
+    raw.includes("TOO_MANY_ATTEMPTS_TRY_LATER")
+  )
+    return "Zbyt wiele prób logowania. Spróbuj później.";
+  if (
+    raw.includes("auth/invalid-credential") ||
+    raw.includes("INVALID_LOGIN_CREDENTIALS")
+  )
+    return "Nieprawidłowy login lub hasło.";
 
-    switch (code) {
-      case "auth/invalid-email":
-        return "Nieprawidłowy adres e-mail.";
-      case "auth/user-not-found":
-        return "Użytkownik nie istnieje.";
-      case "auth/wrong-password":
-        return "Nieprawidłowe hasło.";
-      case "auth/too-many-requests":
-        return "Zbyt wiele prób logowania. Spróbuj później.";
-      case "auth/invalid-credential":
-      case "INVALID_LOGIN_CREDENTIALS":
-        return "Nieprawidłowy login lub hasło.";
-    }
-  }
-
-  return "Wystąpił nieznany błąd.";
+  return `Błąd logowania: ${raw || "nieznany"}`;
 }
